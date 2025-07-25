@@ -11,7 +11,7 @@ Driver for Sensirion STS30/STS31/STS35 digital temperature sensor.
 ## Installation
 
 ```sh
-idf.py add-dependency "esp-idf-lib/sts3x^1.0.0
+idf.py add-dependency esp-idf-lib/sts3x^1.0.0
 ```
 
 ## Support

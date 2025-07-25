@@ -1,5 +1,9 @@
 # esp-idf-lib/sts3x
 
+[![Build examples](https://github.com/esp-idf-lib/sts3x/actions/workflows//build.yml/badge.svg)](https://github.com/esp-idf-lib/sts3x/actions/workflows//build.yml)
+[![Build docs](https://github.com/esp-idf-lib/sts3x/actions/workflows//build-docs.yml/badge.svg)](https://github.com/esp-idf-lib/sts3x/actions/workflows//build-docs.yml)
+[![Validation](https://github.com/esp-idf-lib/sts3x/actions/workflows//validate-component.yml/badge.svg)](https://github.com/esp-idf-lib/sts3x/actions/workflows//validate-component.yml)
+
 Driver for Sensirion STS30/STS31/STS35 digital temperature sensor.
 
 * [Documentation](https://esp-idf-lib.github.io/sts3x/)
@@ -11,7 +15,7 @@ Driver for Sensirion STS30/STS31/STS35 digital temperature sensor.
 ## Installation
 
 ```sh
-idf.py add-dependency esp-idf-lib/sts3x^1.0.0
+idf.py add-dependency esp-idf-lib/sts3x
 ```
 
 ## Support

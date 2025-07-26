@@ -4,7 +4,8 @@ description: Driver for Sensirion STS30/STS31/STS35 digital temperature sensor
 version: 1.0.3
 groups:
   - temperature
-code_owners: slimcdk
+code_owners:
+  - slimcdk
 depends:
   - i2cdev
   - log

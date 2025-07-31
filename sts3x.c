@@ -60,13 +60,14 @@ const char *TAG = "sts3x";
 #define STS3X_HEATER_ON_CMD            0x306D
 #define STS3X_HEATER_OFF_CMD           0x3066
 
-static const uint16_t STS3X_MEASURE_CMD[6][3] = {
-        {0x2400, 0x240b, 0x2416}, // [SINGLE_SHOT][H,M,L] without clock stretching
-        {0x2032, 0x2024, 0x202f}, // [PERIODIC_05][H,M,L]
-        {0x2130, 0x2126, 0x212d}, // [PERIODIC_1 ][H,M,L]
-        {0x2236, 0x2220, 0x222b}, // [PERIODIC_2 ][H,M,L]
-        {0x2334, 0x2322, 0x2329}, // [PERIODIC_4 ][H,M,L]
-        {0x2737, 0x2721, 0x272a}  // [PERIODIC_10][H,M,L]
+static const uint16_t STS3X_MEASURE_CMD[6][3] =
+{
+    {0x2400, 0x240b, 0x2416}, // [SINGLE_SHOT][H,M,L] without clock stretching
+    {0x2032, 0x2024, 0x202f}, // [PERIODIC_05][H,M,L]
+    {0x2130, 0x2126, 0x212d}, // [PERIODIC_1 ][H,M,L]
+    {0x2236, 0x2220, 0x222b}, // [PERIODIC_2 ][H,M,L]
+    {0x2334, 0x2322, 0x2329}, // [PERIODIC_4 ][H,M,L]
+    {0x2737, 0x2721, 0x272a}  // [PERIODIC_10][H,M,L]
 };
 
 // due to the fact that ticks can be smaller than portTICK_PERIOD_MS, one and
@@ -79,17 +80,19 @@ static const uint16_t STS3X_MEASURE_CMD[6][3] = {
 #define STS3X_MEAS_DURATION_REP_LOW    4
 
 // measurement durations in us
-static const uint16_t STS3X_MEAS_DURATION_US[3] = {
-        STS3X_MEAS_DURATION_REP_HIGH   * 1000,
-        STS3X_MEAS_DURATION_REP_MEDIUM * 1000,
-        STS3X_MEAS_DURATION_REP_LOW    * 1000
+static const uint16_t STS3X_MEAS_DURATION_US[3] =
+{
+    STS3X_MEAS_DURATION_REP_HIGH   * 1000,
+    STS3X_MEAS_DURATION_REP_MEDIUM * 1000,
+    STS3X_MEAS_DURATION_REP_LOW    * 1000
 };
 
 // measurement durations in RTOS ticks
-static const uint8_t STS3X_MEAS_DURATION_TICKS[3] = {
-        TIME_TO_TICKS(STS3X_MEAS_DURATION_REP_HIGH),
-        TIME_TO_TICKS(STS3X_MEAS_DURATION_REP_MEDIUM),
-        TIME_TO_TICKS(STS3X_MEAS_DURATION_REP_LOW)
+static const uint8_t STS3X_MEAS_DURATION_TICKS[3] =
+{
+    TIME_TO_TICKS(STS3X_MEAS_DURATION_REP_HIGH),
+    TIME_TO_TICKS(STS3X_MEAS_DURATION_REP_MEDIUM),
+    TIME_TO_TICKS(STS3X_MEAS_DURATION_REP_LOW)
 };
 
 #define CHECK(x) do { esp_err_t __; if ((__ = x) != ESP_OK) return __; } while (0)
@@ -154,7 +157,7 @@ static inline bool is_measuring(sts3x_t *dev)
     // not running if measurement is not started at all or
     // it is not the first measurement in periodic mode
     if (!dev->meas_started || !dev->meas_first)
-      return false;
+        return false;
 
     // not running if time elapsed is greater than duration
     uint64_t elapsed = esp_timer_get_time() - dev->meas_start_time;

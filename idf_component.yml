@@ -1,5 +1,5 @@
 ---
-version: 1.0.6
+version: 1.0.7
 description: Driver for Sensirion STS30/STS31/STS35 digital temperature sensor
 license: BSD-3
 targets:

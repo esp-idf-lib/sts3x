@@ -14,11 +14,6 @@
 #include <string.h>
 #include <esp_err.h>
 
-/* float is used in printf(). you need non-default configuration in
- * sdkconfig for ESP8266, which is enabled by default for this
- * example. see sdkconfig.defaults.esp8266
- */
-
 #ifndef APP_CPU_NUM
 #define APP_CPU_NUM PRO_CPU_NUM
 #endif

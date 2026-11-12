@@ -171,7 +171,8 @@ esp_err_t sts3x_measure(sts3x_t *dev, float *temperature);
  *       it can be considered as constant for a repeatability.
  *
  * @param repeat    Repeatability, see type ::sts3x_repeat_t
- * @return          Measurement duration given in RTOS ticks
+ * @return          Measurement duration given in RTOS ticks, including a small
+ *                  safety margin
  */
 uint8_t sts3x_get_measurement_duration(sts3x_repeat_t repeat);
 
@@ -228,6 +229,8 @@ esp_err_t sts3x_stop_periodic_measurement(sts3x_t *dev);
  *      data[2] = Humidity CRC
  *
  * In case that there are no new data that can be read, the function fails.
+ * If the measurement is still running, the function waits for the remaining
+ * time (at most 2 ms) before reading the results.
  *
  * @param dev       Device descriptor
  * @param raw_data  Byte array in which raw data are stored

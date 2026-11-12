@@ -70,10 +70,23 @@ static const uint16_t STS3X_MEASURE_CMD[6][3] =
     {0x2737, 0x2721, 0x272a}  // [PERIODIC_10][H,M,L]
 };
 
-// due to the fact that ticks can be smaller than portTICK_PERIOD_MS, one and
-// a half tick period added to the duration to be sure that waiting time for
-// the results is long enough
-#define TIME_TO_TICKS(ms) (1 + ((ms) + (portTICK_PERIOD_MS-1) + portTICK_PERIOD_MS/2 ) / portTICK_PERIOD_MS)
+// A delay of N RTOS ticks lasts between N-1 and N tick periods and the phase of
+// the tick counter when the delay starts is unknown. Around light sleep the tick
+// counter and esp_timer drift apart by up to one tick as well (pm_step_tick()
+// rounds the slept time down, light sleep wakes up 100 us early, esp_timer is
+// re-based on the RTC slow clock, and on Xtensa a tick interrupt is forced right
+// after the wake up). One and a half tick periods are not enough for that: with
+// CONFIG_FREERTOS_HZ=1000 portTICK_PERIOD_MS is 1 and the old formula added no
+// margin at all, so the delay could end while the sensor was still measuring.
+#define STS3X_MEAS_MARGIN_MS 2
+
+// Round up to whole ticks. pdMS_TO_TICKS() rounds down and would yield a delay
+// shorter than the measurement itself at low tick rates (e.g. 100 Hz).
+#define TIME_TO_TICKS(ms) (1 + ((ms) + STS3X_MEAS_MARGIN_MS + (portTICK_PERIOD_MS) - 1) / (portTICK_PERIOD_MS))
+
+// Maximum extra time to wait for a measurement that is still running before
+// reporting an error
+#define STS3X_MEAS_GRACE_US 2000
 
 #define STS3X_MEAS_DURATION_REP_HIGH   15
 #define STS3X_MEAS_DURATION_REP_MEDIUM 6
@@ -172,10 +185,22 @@ static esp_err_t get_raw_data_nolock(sts3x_t *dev, sts3x_raw_data_t raw_data)
         ESP_LOGE(TAG, "Measurement is not started");
         return ESP_ERR_INVALID_STATE;
     }
+    // The delays in the callers already account for the measurement duration.
+    // Wait for the remaining time instead of dropping a measurement that is
+    // about to complete: the tick counter may run ahead of esp_timer after
+    // light sleep.
     if (is_measuring(dev))
     {
-        ESP_LOGE(TAG, "Measurement is still running");
-        return ESP_ERR_INVALID_STATE;
+        const int64_t duration_us = STS3X_MEAS_DURATION_US[dev->repeatability] + STS3X_MEAS_GRACE_US;
+        const int64_t deadline = (int64_t)dev->meas_start_time + duration_us;
+        while (is_measuring(dev) && esp_timer_get_time() < deadline)
+            vTaskDelay(1);
+
+        if (is_measuring(dev))
+        {
+            ESP_LOGE(TAG, "Measurement is still running");
+            return ESP_ERR_INVALID_STATE;
+        }
     }
 
     // read raw data
